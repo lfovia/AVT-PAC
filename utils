@@ -1,0 +1,32 @@
+import os
+import shutil
+import tempfile
+from pathlib import Path
+
+def ensure_dir(path):
+    """Ensure directory exists"""
+    Path(path).mkdir(parents=True, exist_ok=True)
+
+def cleanup_temp_files():
+    """Clean up temporary files"""
+    temp_dir = tempfile.gettempdir()
+    for file in os.listdir(temp_dir):
+        if file.endswith(".wav") or file.endswith(".mp4"):
+            try:
+                os.remove(os.path.join(temp_dir, file))
+            except:
+                pass
+
+def get_video_info(video_path):
+    """Get video metadata"""
+    import cv2
+    cap = cv2.VideoCapture(video_path)
+    info = {
+        "fps": cap.get(cv2.CAP_PROP_FPS),
+        "width": int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
+        "height": int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)),
+        "frames": int(cap.get(cv2.CAP_PROP_FRAME_COUNT)),
+        "duration": cap.get(cv2.CAP_PROP_FRAME_COUNT) / cap.get(cv2.CAP_PROP_FPS)
+    }
+    cap.release()
+    return info
